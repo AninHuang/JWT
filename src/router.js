@@ -19,7 +19,8 @@ const router = new Router({
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: Dashboard
+      component: Dashboard,
+      meta: { requiresAuth: true } // requiresAuth 為自定義屬性
     },
     {
       path: '/register',
@@ -32,6 +33,16 @@ const router = new Router({
       component: LoginUser
     }
   ]
+})
+
+// Navigation Guards // 路由改變前的驗證
+router.beforeEach((to, from, next) => {
+  const loggedIn = localStorage.getItem('user')
+
+  if (to.matched.some(record => record.meta.requiresAuth) && !loggedIn) {
+    next('/') // or next({ path: '/' }) // redirect to a different location
+  }
+  next() // move on to the next hook in the pipeline.
 })
 
 export default router
